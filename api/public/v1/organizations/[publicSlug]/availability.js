@@ -1,4 +1,4 @@
-import { validateAvailabilityQuery, searchSquareAvailability } from '../../../server/public-availability.js';
+import { validateAvailabilityQuery, searchSquareAvailability } from '../../../../../server/public-availability.js';
 
 const ALLOWED_ORIGINS = new Set([
   'https://mk-manikure-lounge.vercel.app',
