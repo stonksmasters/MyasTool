@@ -8,7 +8,7 @@ export function validateAvailabilityQuery(query, now = Date.now()) {
     return { error: 'Select one published Square service variation.' };
   }
   const validDate = value => {
-    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value || '')) return false;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return false;
     const date = new Date(value + 'T00:00:00Z');
     return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
   };
@@ -27,7 +27,7 @@ export async function searchSquareAvailability({ square, locationId, serviceVari
     query: {
       filter: {
         location_id: locationId,
-        start_at_range: { start_at: from, end_at: to },
+        start_at_range: { start_at: new Date(from + 'T00:00:00Z').toISOString(), end_at: new Date(to + 'T00:00:00Z').toISOString() },
         segment_filters: [{ service_variation_id: serviceVariationId, team_member_id_filter: { any: [teamMemberId] } }],
       },
     },
