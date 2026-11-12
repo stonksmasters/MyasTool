@@ -1,3 +1,4 @@
+import { appointmentWindowForDates } from './appointments.js';
 // Square's live availability is authoritative; never derive public slots from private bookings.
 export const AVAILABILITY_SCOPES = ['APPOINTMENTS_READ', 'ITEMS_READ'];
 
@@ -23,11 +24,13 @@ export async function searchSquareAvailability({ square, locationId, serviceVari
   if (!locationId || !teamMemberId || !timezone) throw new Error('Square location, team member and timezone must be configured.');
   // The public service ID must be resolved against a server-maintained published catalog
   // before invoking this function. Never accept arbitrary provider IDs as authorization.
+  const window = appointmentWindowForDates(from, to, timezone);
+  if (!window) throw new Error('Invalid salon-local availability date range.');
   const response = await square('/v2/bookings/availability/search', {
     query: {
       filter: {
         location_id: locationId,
-        start_at_range: { start_at: new Date(from + 'T00:00:00Z').toISOString(), end_at: new Date(to + 'T00:00:00Z').toISOString() },
+        start_at_range: { start_at: window.start, end_at: window.end },
         segment_filters: [{ service_variation_id: serviceVariationId, team_member_id_filter: { any: [teamMemberId] } }],
       },
     },
